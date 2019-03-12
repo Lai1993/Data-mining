@@ -1,0 +1,70 @@
+執行方法，從ACSforChecker.py開始
+
+ACS_for_checker.py	程式進入點
+	import UI
+	import train
+	import battle
+	import replay
+
+UI.py				UI顯示模組
+	import os
+	import time
+	from msvcrt import kbhit,getch
+
+	print_at(r,c,s)
+	showMenu()
+	boardInit()
+	showBoard(player,board,round)
+	showState(player,state,round)
+	shoMsg(Msg)
+
+train.py			進行訓練
+	import time, random, numpy as np
+	import fileIO, gameRule, UI
+
+	stateToScore(pstate)		輸入玩家狀態，給出初始分數
+	calcScore(player,tau,state,targets)	輸入所有下一步選項，輸出他們的分數
+	weightChoice(scores,targets)
+	mirror(state)	將棋盤旋轉180度
+	localUpdate(tau,state)
+	globalUpdate(tau,rec,round,score)
+	train(tau)
+battle.py			進行對戰
+	import UI
+	import fileIO
+
+	init()
+	getP1Move(board,state)
+	getP2Move(board,state)
+	movAble(player,state,target)	#True/False <- 哪個玩家，棋盤狀態，(移動棋子、移動路徑)
+	move(player,state,target)
+replay.py			對戰重播
+fileIO.py			資料的存取與處理
+	loadModel()
+	loadRec()
+	saveModel()
+	saveRec()
+gameRule.py				關於遊戲規則的部分
+	init()				初始化的狀態
+	getMoveNet()
+	findNextPoints()	尋找每個棋子的所有移動方法
+	isMovAble()			確認棋子是否可移動
+	move()				移動棋子
+	isEndGame()			確認遊戲是否結束
+############################
+變數說明
+
+board	#為 9*9矩陣組成，存著目前的版面，0為無子，1~15為player1，16~30為player2
+state	#為31個座標組成，存著每個棋子在版面上的座標，1~15為player1，16~30為player2
+round	#為目前的回合進度，一開始為回合0，雙方都移動一次為一個回合
+player	#目前輪到哪個玩家下棋，0為player1，1為player2
+target	#存個一或數個移動方式，移動方式的組成為(棋子編號，目標x座標，目標y座標)
+tau		#存著每個state對應的費洛蒙
+scores	#每個狀態原始的費洛蒙
+
+坐標系
+1D座標系	line = p1~p2
+2D座標系	board = x,y~x1,y1~x2,y1
+3D座標系	move_net = net,i，大小為n*n，n=(5-(net>>1))*(5-(net&1))
+net&1 取y位置
+net>>1 取x位置
